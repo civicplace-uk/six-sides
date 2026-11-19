@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Civic Place: Six Sides</title>
+<style>@font-face{font-family:'Poppins';src:url('fonts/Poppins-Regular.ttf') format('truetype');font-weight:400}@font-face{font-family:'Poppins';src:url('fonts/Poppins-Medium.ttf') format('truetype');font-weight:500}@font-face{font-family:'Poppins';src:url('fonts/Poppins-SemiBold.ttf') format('truetype');font-weight:600}@font-face{font-family:'Poppins';src:url('fonts/Poppins-Bold.ttf') format('truetype');font-weight:700}@font-face{font-family:'Space Mono';src:url('fonts/SpaceMono-Bold.ttf') format('truetype');font-weight:700}</style>
+<style>
+:root{--bg:#003A3B;--bg2:#002C2D;--lime:#CCF30E;--slate:#546E6C;--mint:#C8DCD8;--white:#fff}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg2);color:var(--white);font-family:Poppins,Arial,sans-serif}
+a{color:var(--lime)}
+header{display:flex;justify-content:space-between;align-items:center;padding:22px 5vw;background:var(--bg)}
+header img{height:34px}
+@media (max-width:600px){header .tag{display:none}}
+.tag{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.3em;color:#cfe;opacity:.75;text-transform:uppercase}
+.kicker{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.28em;color:var(--lime);text-transform:uppercase;margin:0 0 10px}
+section{padding:56px 5vw}
+.hero{background:radial-gradient(ellipse at 50% 40%,#004A4A,var(--bg2) 75%)}
+.hero h1{font-size:clamp(28px,4.4vw,54px);line-height:1.12;margin:0 0 10px;max-width:900px}
+.hero h1 span{color:var(--lime)}
+.hero p.lead{color:var(--mint);font-size:clamp(15px,1.6vw,19px);max-width:760px;margin:0 0 28px}
+.player{position:relative;max-width:1100px;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.45);background:#000}
+.player video{display:block;width:100%;height:auto}
+.btnrow{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.btn{font:600 15px Poppins,Arial,sans-serif;border:0;border-radius:999px;padding:13px 22px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn.lime{background:var(--lime);color:var(--bg)}
+.btn.ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18)}
+.stage{position:relative;max-width:1100px;aspect-ratio:16/9;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.45);background:radial-gradient(ellipse at 50% 50%,#004A4A,#002C2D 80%)}
+.stage video{position:absolute;inset:0;width:100%;height:100%;display:block;background:#000;transition:opacity .8s}
+.stage.hexmode video{opacity:0;pointer-events:none}
+.hexlayer{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .8s;display:flex;align-items:center;justify-content:center}
+.stage.hexmode .hexlayer{opacity:1;pointer-events:auto}
+.hexlayer svg{width:100%;height:100%}
+.prompt{position:absolute;left:0;right:0;bottom:3%;text-align:center;font-size:clamp(9px,1.1vw,13px);margin:0}
+.again{position:absolute;top:3%;right:2.5%;padding:8px 14px;font-size:13px}
+.side.lit .shape{fill:#F4FFB8;filter:drop-shadow(0 0 18px rgba(204,243,14,.9))}
+.side.lit text{fill:#CCF30E}
+.explore{background:var(--bg);position:relative;overflow:hidden}
+.explore h2{font-size:clamp(24px,3.2vw,40px);margin:0 0 8px}
+.explore p.sub{color:var(--mint);margin:0 0 10px;max-width:720px}
+.hexwrap{max-width:1100px;margin:0 auto}
+svg#hex{width:100%;height:auto;display:block;overflow:visible}
+.side{cursor:pointer;outline:none}
+.side .shape{fill:var(--lime);transition:fill .25s, transform .25s;transform-box:fill-box;transform-origin:center}
+.side:hover .shape,.side:focus .shape{fill:#E6FF6A;transform:scale(1.045)}
+.side .ic{fill:var(--bg);stroke:var(--bg);pointer-events:none}
+.side text{fill:#fff;font:600 26px Poppins,Arial,sans-serif;pointer-events:none}
+.side .num{fill:var(--lime);font:700 15px "Space Mono",monospace;letter-spacing:.2em}
+.centre{cursor:pointer}
+.centre circle{fill:rgba(255,255,255,.06);transition:fill .25s}
+.centre:hover circle,.centre:focus circle{fill:rgba(204,243,14,.16)}
+.pulse .shape{animation:pulse 1.6s ease-in-out 3}
+@keyframes pulse{50%{fill:#F2FFB0}}
+.list{display:none;max-width:1100px;grid-template-columns:1fr;gap:10px;margin-top:20px}
+.list button{font:600 15px Poppins,Arial,sans-serif;text-align:left;background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.12);border-left:5px solid var(--lime);border-radius:8px;padding:14px 16px;cursor:pointer}
+.list button small{display:block;color:var(--mint);font-weight:400}
+@media (max-width:760px){.side text{display:none}.list{display:grid}}
+.panel{position:fixed;inset:0;background:rgba(0,20,20,.72);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
+.panel.open{display:flex}
+.card{background:var(--bg);border:1px solid rgba(255,255,255,.12);border-radius:16px;max-width:980px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.cardhead{display:flex;justify-content:space-between;align-items:flex-start;padding:24px 28px 0}
+.close{background:rgba(255,255,255,.08);border:0;color:#fff;width:40px;height:40px;border-radius:50%;font-size:22px;cursor:pointer;flex:none}
+.cardbody{display:grid;grid-template-columns:1.1fr 1fr;gap:26px;padding:16px 28px 28px}
+@media (max-width:760px){.cardbody{grid-template-columns:1fr}}
+.card h3{font-size:clamp(22px,2.6vw,30px);margin:0 0 4px}
+.prob{background:rgba(255,255,255,.05);border-radius:12px;padding:18px 20px;margin-bottom:14px}
+.prob .stat{font-size:clamp(34px,4vw,48px);font-weight:700;line-height:1.05}
+.prob .lab{color:var(--mint);font-size:15px}
+.sol{border-left:5px solid var(--lime);padding:4px 0 4px 18px}
+.sol h4{color:var(--lime);font-size:20px;margin:0 0 6px}
+.sol p,.sol li{color:#E6F0EE;font-size:15px;line-height:1.55}
+.sol ul{padding-left:18px;margin:6px 0}
+.he{background:rgba(204,243,14,.08);border:1px solid rgba(204,243,14,.35);border-radius:12px;padding:14px 18px;margin-top:16px}
+.he ul{margin:6px 0 0;padding-left:18px}.he li{color:#E6F0EE;font-size:14px;line-height:1.5}
+.src{color:var(--mint);opacity:.8;font-size:12px;margin-top:14px}
+.clip video{width:100%;border-radius:10px;background:#000;display:block}
+.navrow{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
+.navrow .btn{padding:10px 16px;font-size:14px}
+.soon{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.2em;color:var(--lime);opacity:.85;margin-top:10px;text-transform:uppercase}
+.hbook{font-weight:600;font-size:14px;color:#003a3b;background:var(--lime);padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap}
+.btn.book{text-decoration:none;display:inline-block}
+footer{background:var(--bg2);padding:40px 5vw 50px;border-top:1px solid rgba(255,255,255,.08)}
+footer h2{margin:0 0 6px;font-size:clamp(22px,3vw,34px)}
+footer h2 span{color:var(--lime)}
+footer p{color:var(--mint);margin:4px 0}
+header,footer{display:none!important}
+body{background:transparent}
+</style>
+</head>
+<body>
+<header><img src="logo_white.png" alt="Civic Place"><span class="tag">Strategy · Solutions · Development</span><a class="hbook" href="https://outlook.office.com/bookwithme/user/ec65e96cf0c14750b8d73c83f3eb1884@civicplace.co.uk?anonymous" target="_blank" rel="noopener">Book a call</a></header>
+
+<section class="hero">
+  <p class="kicker">Housing, skills and land</p>
+  <h1>Six problems. Six solutions. <span>One partner.</span></h1>
+  <p class="lead">Councils face the same six problems, each tackled on its own. Watch how Civic Place joins them into one circle, then explore each side of the hexagon.</p>
+  <div class="stage" id="stage">
+    <video id="main" src="circle.mp4" poster="poster.jpg" controls playsinline preload="metadata"></video>
+    <div class="hexlayer" id="hexlayer" aria-hidden="true">
+      <svg id="hex" viewBox="-940 -470 1880 1058" role="group" aria-label="The six sides of the Civic Place hexagon"></svg>
+      <p class="prompt kicker">Click any side to explore · or the centre for the model</p>
+      <button class="btn ghost again" id="again">↺ Watch again</button>
+    </div>
+  </div>
+  <div class="btnrow">
+    <button class="btn lime" id="play">▶ Watch the film</button>
+    <button class="btn ghost" id="toHex">Skip to the six sides</button>
+  </div>
+  <div class="list" id="list"></div>
+</section>
+
+<footer>
+  <p class="kicker">Let's start the circle in your area</p>
+  <h2>This is your land, <span>but our risk.</span></h2><p style="color:#fff;font-weight:600;margin:6px 0 10px">Let's build homes together.</p>
+  <p style="margin:14px 0 18px"><a class="btn lime book" href="https://outlook.office.com/bookwithme/user/ec65e96cf0c14750b8d73c83f3eb1884@civicplace.co.uk?anonymous" target="_blank" rel="noopener">Book a 30 minute call</a></p>
+  <p>Adam Smith FCIOB, CEO · adam.smith@civicplace.co.uk · 07764 285931</p>
+  <p><a href="https://www.civicplace.co.uk">www.civicplace.co.uk</a></p>
+</footer>
+
+<div class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="ptitle">
+  <div class="card">
+    <div class="cardhead">
+      <div><p class="kicker" id="pkick"></p><h3 id="ptitle"></h3></div>
+      <button class="close" id="pclose" aria-label="Close">×</button>
+    </div>
+    <div class="cardbody" id="pbody"></div>
+  </div>
+</div>
+
+<script>
+const SIDES = [
+ {id:"land", he:["Around £3bn of Homes England capital grant for land and infrastructure can help unlock harder brownfield sites","Homes England land assembly and master planning support"], video:"land.mp4", poster:"land.jpg", vlabel:"Watch: how the lease works", problem:"Idle land", stat:"1.4m", lab:"homes' worth of brownfield capacity", solution:"Council land, leased not sold",
+  text:"The council leases underused brownfield land to Civic Place and keeps the freehold.",
+  points:["Civic Place takes the development cost and risk","No capital needed from the council","The lease restricts the land to affordable housing"],
+  src:"Source: Civic Place white paper"},
+ {id:"viability", video:"stack.mp4", poster:"stack.jpg", vlabel:"Watch: how a scheme stacks up", he:["£39bn Social and Affordable Homes Programme over 2026 to 2036, with £27.3bn outside London through Homes England","National Housing Bank loans at 0.1% for registered providers after a programme grant allocation","Grant plus Civic Place's lower build cost makes each scheme go further"], problem:"Schemes don't stack up", stat:"700+", lab:"affordable housing schemes stalled. New build completions in England fell to 202,800 in 2025, the lowest since 2015.", solution:"Local builders kept working",
+  text:"Civic Place funds the build and delivers for less, so schemes stack up again and local builders keep their teams busy.",
+  points:["Lower build costs, so more schemes stack up","Funded by institutional capital, not private sales","Delivery that doesn't depend on a weak sales market"],
+  src:"Sources: Home Builders Federation research; housing completions data for England"},
+ {id:"skills", video:"skills.mp4", poster:"skills.jpg", vlabel:"Watch: a pipeline of skills", problem:"Skills shortage", stat:"41,200", lab:"extra construction workers needed every year to 2030. One in three workers is over 50.", solution:"College skills plan",
+  text:"Every scheme comes with a skills plan agreed with the local college.",
+  points:["The pipeline of sites is shared up front","Courses and intakes planned against real jobs","Apprentices move from site to site, so training never stalls","Experienced trades mentor the next generation"],
+  src:"Source: CITB Construction Workforce Outlook 2026 to 2030"},
+ {id:"young", video:"young.mp4", poster:"young.jpg", vlabel:"Watch: a way in for young people", problem:"Young people left out", stat:"981,000", lab:"young people aged 16 to 24 not in education, employment or training, more than 1 in 8", solution:"Apprentices on every site",
+  text:"Young people train on real sites, building real homes, in their own town.",
+  points:["Apprenticeships and placements on every scheme","Ready to support the proposed youth opportunity guarantee","Local jobs for local people"],
+  src:"Source: ONS, NEET UK, August 2026 (April to June 2026)"},
+ {id:"homes", video:"homes.mp4", poster:"homes.jpg", vlabel:"Watch: turning spending into homes", he:["The programme aims for around 300,000 social and affordable homes, at least 60% for social rent","Civic Place homes on council land feed directly into that target, through our registered provider partners"], problem:"Temporary accommodation", stat:"£2.93bn", lab:"spent by councils on temporary accommodation in 2025 to 2026. 135,580 households, including 177,530 children, were in temporary accommodation in March 2026.", solution:"Affordable homes for local families",
+  text:"Homes go to local families at affordable and social rents, easing the cost of temporary accommodation.",
+  points:["A registered provider partner takes the homes at completion","The council nominates 100% of first lets and 75% after","Homes managed to a long-term standard"],
+  src:"Sources: MHCLG statutory homelessness statistics, March 2026; MHCLG local authority revenue outturn 2025 to 2026"},
+ {id:"greenbelt", video:"greenbelt.mp4", poster:"greenbelt.jpg", vlabel:"Watch: brownfield first", he:["Homes England land and infrastructure funding can bring brownfield sites forward first","A funded brownfield programme helps councils hold their land supply"], problem:"Green belt pressure", stat:"5 years", lab:"of land for new homes that every council must show. When homes don't get built, supply runs short, it becomes harder to resist building on the green belt, and councils may need to review their boundaries.", solution:"Helping protect the green belt",
+  text:"Building on brownfield first gives councils a credible plan to meet their affordable housing need.",
+  points:["Homes on land that's already been used","Every brownfield home counts towards the council's land supply","Helps ease pressure on the green belt"],
+  src:"Source: National Planning Policy Framework"}
+];
+const CENTRE = {he:["Civic Place brings council land, private capital, a pipeline of sites and delivery","Homes England and the National Housing Bank bring grant, low-cost finance, land and expertise","Together, every pound of grant delivers more homes"], problem:"The Civic Place model", solution:"This is your land, but our risk.",
+  text:"One partner joins the six sides together.",
+  points:["The council grants Civic Place a lease and keeps the freehold","Civic Place funds and builds, taking all development cost and risk","A registered provider partner takes the homes at completion","The council gets nominations rights and 20% of any surplus","A skills plan with the local college on every scheme"]};
+
+const svg = document.getElementById('hex'); const NS = "http://www.w3.org/2000/svg";
+const RO = 330, BAND = 96, AO = RO*Math.cos(Math.PI/6), AI = AO-BAND, RI = AI/Math.cos(Math.PI/6), G = 7;
+const rad = d => d*Math.PI/180, V = (r,a) => [r*Math.cos(a), r*Math.sin(a)];
+const ICONS = [
+ '<rect x="-22" y="-4" width="44" height="22" fill="none" stroke-width="4"/><path d="M-6 -4V-26" stroke-width="4"/><path d="M-6 -26L12 -20L-6 -14Z"/>',
+ '<path d="M-20 6A20 20 0 0 1 20 6Z"/><rect x="-28" y="6" width="56" height="6"/><rect x="-3" y="-16" width="6" height="10"/>',
+ '<path d="M0 -20L30 -6L0 8L-30 -6Z"/><path d="M-16 2V16C-8 24 8 24 16 16V2" fill="none" stroke-width="4"/><path d="M26 -4V14" stroke-width="4"/>',
+ '<circle cx="0" cy="-14" r="9"/><path d="M-18 22C-18 -2 18 -2 18 22Z"/>',
+ '<path d="M-24 -2L0 -24L24 -2Z"/><path d="M-17 -4H17V22H5V8H-5V22H-17Z"/>',
+ '<circle cx="0" cy="-8" r="16"/><circle cx="-11" cy="2" r="11"/><circle cx="11" cy="2" r="11"/><rect x="-3" y="6" width="6" height="18"/>'
+];
+const el = (n, a={}, p=svg) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); p.appendChild(e); return e; };
+SIDES.forEach((s, i) => {
+  const th = rad(-60 + 60*i), a0 = th - rad(30), a1 = th + rad(30), tx = -Math.sin(th), ty = Math.cos(th);
+  let p = [V(RO,a0), V(RO,a1), V(RI,a1), V(RI,a0)];
+  p = [[p[0][0]+tx*G,p[0][1]+ty*G],[p[1][0]-tx*G,p[1][1]-ty*G],[p[2][0]-tx*G,p[2][1]-ty*G],[p[3][0]+tx*G,p[3][1]+ty*G]];
+  const g = el('g', {class:'side', tabindex:'0', role:'button', 'aria-label': `${s.problem}: ${s.solution}`, 'data-i': i});
+  el('polygon', {class:'shape', points: p.map(q => q.join(',')).join(' ')}, g);
+  const cr = (AO+AI)/2, cx = cr*Math.cos(th), cy = cr*Math.sin(th);
+  const ic = el('g', {class:'ic', transform:`translate(${cx},${cy})`}, g); ic.innerHTML = ICONS[i];
+  const lr = 400, lx = lr*Math.cos(th), ly = lr*Math.sin(th), c = Math.cos(th);
+  const anchor = c > 0.3 ? 'start' : (c < -0.3 ? 'end' : 'middle');
+  const n = el('text', {x: lx, y: ly - 22, 'text-anchor': anchor, class:'num'}, g); n.textContent = `0${i+1}  ${s.problem.toUpperCase()}`;
+  const t = el('text', {x: lx, y: ly + 14, 'text-anchor': anchor}, g); t.textContent = s.solution;
+  g.addEventListener('click', () => openSide(i));
+  g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSide(i); } });
+  const b = document.createElement('button'); b.innerHTML = `0${i+1} ${s.solution}<small>${s.problem}</small>`;
+  b.onclick = () => openSide(i); document.getElementById('list').appendChild(b);
+});
+const cg = el('g', {class:'centre', tabindex:'0', role:'button', 'aria-label':'The Civic Place model'});
+el('circle', {r: 175}, cg);
+const im = el('image', {href:'logo_mark.png', x:-50, y:-95, width:100, height:111}, cg);
+const ct = el('text', {y: 62, 'text-anchor':'middle', fill:'#fff', 'font-family':'Poppins', 'font-weight':600, 'font-size':24}, cg); ct.textContent = 'The model';
+const cs = el('text', {y: 92, 'text-anchor':'middle', fill:'#CCF30E', 'font-family':'Space Mono', 'font-weight':700, 'font-size':13, 'letter-spacing':'3'}, cg); cs.textContent = 'CLICK TO OPEN';
+cg.addEventListener('click', () => openCentre());
+cg.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCentre(); } });
+
+const panel = document.getElementById('panel'), pbody = document.getElementById('pbody');
+let current = null;
+function heBox(h){ return h ? `<div class="he"><p class="kicker">Where Homes England helps</p><ul>${h.map(x=>`<li>${x}</li>`).join('')}</ul></div>` : ''; }
+function list(points){ return '<ul>' + points.map(x => `<li>${x}</li>`).join('') + '</ul>'; }
+function openSide(i){
+  const s = SIDES[i]; current = i;
+  document.getElementById('pkick').textContent = `Side 0${i+1} of 6`;
+  document.getElementById('ptitle').textContent = `${s.problem} → ${s.solution}`;
+  pbody.innerHTML = `<div>
+      <div class="prob"><p class="kicker">The problem</p><div class="stat">${s.stat}</div><div class="lab">${s.lab}</div></div>
+      <div class="sol"><p class="kicker">The Civic Place solution</p><h4>${s.solution}</h4><p>${s.text}</p>${list(s.points)}</div>
+      ${heBox(s.he)}
+      ${s.src ? `<p class="src">${s.src}${s.he ? '; Homes England and National Housing Bank (SAHP 2026 to 2036, investment prospectus 2026)' : ''}</p>` : (s.he ? '<p class="src">Source: Homes England and National Housing Bank (SAHP 2026 to 2036, investment prospectus 2026)</p>' : '')}
+    </div>
+    <div class="clip"><p class="kicker">${s.vlabel || 'Watch this side'}</p><video src="${s.video || `side${i+1}.mp4`}" poster="${s.poster || `side${i+1}.jpg`}" controls playsinline preload="metadata"></video>
+      ${s.video ? '' : '<p class="soon">More content for this side coming soon</p>'}
+      <div class="navrow"><button class="btn ghost" id="prev">← Previous</button><button class="btn lime" id="next">Next side →</button></div></div>`;
+  document.getElementById('prev').onclick = () => openSide((i + 5) % 6);
+  document.getElementById('next').onclick = () => openSide((i + 1) % 6);
+  show(`side-${i+1}`);
+}
+function openCentre(){
+  current = 'c';
+  document.getElementById('pkick').textContent = 'The centre';
+  document.getElementById('ptitle').textContent = CENTRE.problem;
+  pbody.innerHTML = `<div class="sol"><p class="kicker">How it works</p><h4>${CENTRE.solution}</h4><p>${CENTRE.text}</p>${list(CENTRE.points)}${heBox(CENTRE.he)}</div>
+    <div class="clip"><p class="kicker">Watch the film</p><video src="circle.mp4" poster="poster.jpg" controls playsinline preload="metadata"></video>
+      <p class="soon">More detail on the model coming soon</p></div>`;
+  show('model');
+}
+function show(h){
+  document.getElementById('main').pause();
+  panel.classList.add('open'); document.body.style.overflow = 'hidden';
+  try { history.replaceState(null, '', '#' + h); } catch(e) { location.hash = h; }
+  document.getElementById('pclose').focus();
+}
+function closePanel(){
+  panel.querySelectorAll('video').forEach(v => v.pause());
+  panel.classList.remove('open'); document.body.style.overflow = '';
+  try { history.replaceState(null, '', location.pathname + location.search); } catch(e) {}
+}
+document.getElementById('pclose').onclick = closePanel;
+panel.addEventListener('click', e => { if (e.target === panel) closePanel(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && panel.classList.contains('open')) closePanel(); });
+
+function route(){
+  const h = location.hash.replace('#','');
+  const m = h.match(/^side-([1-6])$/);
+  if (m || h === 'model') document.getElementById('stage').classList.add('hexmode');
+  if (m) openSide(+m[1] - 1); else if (h === 'model') openCentre();
+}
+window.addEventListener('hashchange', route); route();
+
+const main = document.getElementById('main');
+document.getElementById('play').onclick = () => { showFilm(); stage.scrollIntoView({behavior:'smooth', block:'center'}); main.play().catch(()=>{}); };
+document.getElementById('toHex').onclick = () => showHex();
+const stage = document.getElementById('stage'), hexlayer = document.getElementById('hexlayer');
+const sides = [...svg.querySelectorAll('.side')]; let litI = -1, litTimer = null;
+function glow(){ sides.forEach(g => g.classList.remove('lit')); if (panel.classList.contains('open')) return; litI = (litI + 1) % 6; sides[litI].classList.add('lit'); }
+function showHex(){
+  main.pause(); stage.classList.add('hexmode'); hexlayer.setAttribute('aria-hidden', 'false');
+  stage.scrollIntoView({behavior:'smooth', block:'center'});
+  clearInterval(litTimer); litI = -1; glow(); litTimer = setInterval(glow, 1100);
+}
+function showFilm(){
+  clearInterval(litTimer); sides.forEach(g => g.classList.remove('lit'));
+  stage.classList.remove('hexmode'); hexlayer.setAttribute('aria-hidden', 'true');
+}
+main.addEventListener('ended', showHex);
+main.addEventListener('play', showFilm);
+document.getElementById('again').onclick = () => { showFilm(); main.currentTime = 0; main.play().catch(()=>{}); };
+</script>
+</body>
+</html>
